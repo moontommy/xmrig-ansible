@@ -1,0 +1,12 @@
+[Unit]
+Description=XMRig miner
+After=network.target
+
+[Service]
+ExecStart={{ xmrig_install_dir }}/xmrig
+User=root
+Group=root
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

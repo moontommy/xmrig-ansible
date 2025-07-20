@@ -1,0 +1,28 @@
+- name: Ensure xmrig config exists
+  ansible.builtin.template:
+    src: config.json.j2
+    dest: "{{ xmrig_install_dir }}/config.json"
+    owner: "{{ xmrig_user }}"
+    group: "{{ xmrig_group }}"
+    mode: '0644'
+  notify: Restart xmrig service
+  become: true
+
+- name: Ensure xmrig service exists
+  ansible.builtin.template:
+    src: xmrig.service.j2
+    dest: /etc/systemd/system/xmrig.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart xmrig service
+  become: true
+
+- name: Ensure xmrig service is enabled and running
+  ansible.builtin.systemd:
+    name: "xmrig.service"
+    enabled: "{{ xmrig_enable }}"
+    daemon_reload: true
+  become: true
+  notify: Restart xmrig service
+  when: not ansible_check_mode

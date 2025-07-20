@@ -1,0 +1,13 @@
+xmrig_build_source: true
+xmrig_version: "master"
+xmrig_install_dir: "/opt/xmrig"
+
+xmrig_user: "xmrig"
+xmrig_group: "xmrig"
+xmrig_enable: "true"
+
+xmrig_pool_url: "rx-eu.unmineable.com:3333"
+xmrig_pool_wallet: "mywallet"
+xmrig_pool_worker: "myworker"
+xmrig_pool_referral: "sewz-utf5"
+xmrig_pool_pass: "x"

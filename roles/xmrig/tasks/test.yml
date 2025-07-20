@@ -1,0 +1,12 @@
+- name: Check xmrig service status
+  ansible.builtin.command: systemctl status xmrig.service
+  register: xmrig_status
+  ignore_errors: true
+  when: not ansible_check_mode
+
+- name: Print xmrig service status
+  ansible.builtin.debug:
+    msg: >
+      The xmrig service status is:
+      {{ xmrig_status.stdout if xmrig_status.rc == 0 else 'Service is not running or encountered an error.' }}
+  when: not ansible_check_mode and xmrig_status is defined

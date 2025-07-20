@@ -1,0 +1,87 @@
+- name: Install prerequisites
+  ansible.builtin.package:
+    name:
+      - git
+      - make
+      - cmake
+      - gcc
+      - gcc-c++
+      - automake
+      - autoconf
+      - libtool
+      - libstdc++-static
+      - libuv-static
+      - hwloc-devel
+      - openssl-devel
+      - perl-FindBin
+      - perl-IPC-Cmd
+    state: present
+  become: true
+
+- name: Ensure xmrig group exists
+  ansible.builtin.group:
+    name: "{{ xmrig_group }}"
+    state: present
+  become: true
+
+- name: Ensure xmrig user exists
+  ansible.builtin.user:
+    name: "{{ xmrig_user }}"
+    group: "{{ xmrig_group }}"
+    shell: /bin/bash
+    create_home: false
+    system: true
+    state: present
+  become: true
+
+- name: Clone xmrig repo
+  ansible.builtin.git:
+    repo: "https://github.com/xmrig/xmrig.git"
+    dest: "{{ xmrig_install_dir }}"
+  become: true
+  when: not ansible_check_mode
+
+- name: Set xmrig directory permissions
+  ansible.builtin.file:
+    path: "{{ xmrig_install_dir }}"
+    state: directory
+    recurse: yes
+    owner: "{{ xmrig_user }}"
+    group: "{{ xmrig_group }}"
+
+- name: Create xmrig build dir
+  ansible.builtin.file:
+    path: "{{ xmrig_install_dir }}/build"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Build xmrig configure
+  ansible.builtin.shell: ./build_deps.sh
+  args:
+    chdir: "{{ xmrig_install_dir }}/scripts"
+  become: true
+
+- name: Build xmrig prepare
+  ansible.builtin.shell: cmake .. -DXMRIG_DEPS=scripts/deps
+  args:
+    chdir: "{{ xmrig_install_dir }}/build"
+  become: true
+
+- name: Build xmrig
+  ansible.builtin.shell: make -j$(nproc)
+  args:
+    chdir: "{{ xmrig_install_dir }}/build"
+  become: true
+
+- name: Move xmrig binary and set permissions
+  ansible.builtin.copy:
+    src: "{{ xmrig_install_dir }}/build/xmrig"
+    dest: "{{ xmrig_install_dir }}/xmrig"
+    remote_src: yes
+    owner: "{{ xmrig_user }}"
+    group: "{{ xmrig_group }}"
+    mode: '0750'
+  become: true

@@ -1,0 +1,23 @@
+- name: Build xmrig
+  ansible.builtin.include_tasks:
+    file: build_binary.yml
+  when: xmrig_build_source
+  tags: xmrig_build
+
+- name: Download xmrig
+  ansible.builtin.include_tasks:
+    file: download_binary.yml
+  when: not xmrig_build_source
+  tags: xmrig_download
+
+- name: Configure xmrig
+  ansible.builtin.include_tasks:
+    file: configure.yml
+  tags: xmrig_config
+
+- name: Test xmrig
+  ansible.builtin.include_tasks:
+    file: test.yml
+  tags: 
+    - xmrig_test
+    - xmrig_status

@@ -1,0 +1,11 @@
+# IDE confs
+.idea/
+.vscode/
+
+# macOS Finder metadata
+.DS_Store/
+
+# Bring your own vars & inventories
+host_vars/
+group_vars/
+inventories/
